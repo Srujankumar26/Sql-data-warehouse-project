@@ -153,3 +153,40 @@ BEGIN
 END
 
 
+-------------------------------------------------error in 5th file insertion use this ---------------------------------------------\
+BEGIN
+	DECLARE @starttime Datetime , @Endtime Datetime 
+	Begin try
+	DECLARE @batchTime_start Datetime , @batchTime_end Datetime
+	SET @starttime = GETDATE();
+		Print '----->Truncatingbronze.erp_loc_a101 TABLE<-----';
+		TRUNCATE TABLE bronze.erp_loc_a101
+
+		print '----->Inserting Table: bronze.erp_loc_a101<-----';
+		BUlk INSERT bronze.erp_loc_a101
+		FROM 'C:\Users\Srujan kumar\OneDrive\Desktop\sql-data-warehouse-project\datasets\source_erp\LOC_A101.csv'
+		WITH(
+				FIRSTROW = 2,
+				FIELDTERMINATOR=',',
+				TABLOCK
+		)
+		SET @Endtime = GETDATE();
+		print '---> Load Duration : ' + cast(datediff(second,@Starttime , @endtime) as Nvarchar)  +' Seconds';
+		print'========---------- ------------==========';
+
+		Set @batchtime_end = Getdate();
+		print '<<<<<------------------------------------------------------------------>>>>>';
+		print '--------------- Loading of bronze layer is completed -------------------';
+		print '-----------------Load Duration : '+ cast(Datediff(second,@batchtime_start,@batchtime_end) as Nvarchar)
+		print '<<<<<------------------------------------------------------------------>>>>>';
+
+	End Try
+	Begin catch
+		print '====================================='
+		print 'Error occured during loading bronze layer'
+		print 'Error message :'+ error_message();
+		print 'Error message :' +cast( error_number() as Nvarchar)
+		print 'Error state :' +cast( error_state() as Nvarchar)
+		print '====================================='
+	end catch
+END
